@@ -1,0 +1,72 @@
+services:
+  app:
+    build: .
+    image: laravel-app
+    container_name: app
+    working_dir: /app
+    volumes:
+      - .:/app
+    networks:
+      - laravel
+    depends_on:
+      - mysql
+      - redis
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - laravel
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - laravel
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    working_dir: /app
+    depends_on:
+      - app
+    volumes:
+      - .:/app
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    networks:
+      - laravel
+
+  vite:
+    image: laravel-app  # Utilise la même image que app (avec PHP + Node)
+    container_name: vite
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "5173:5173"
+    command: npm run dev -- --host
+    networks:
+      - laravel
+    depends_on:
+      - app
+
+volumes:
+  mysql:
+  ayon_data:
+
+networks:
+  laravel:
+    driver: bridge
