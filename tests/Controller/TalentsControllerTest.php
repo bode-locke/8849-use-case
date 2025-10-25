@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Controller;
 
 use App\Enums\TalentRole;
 use App\Models\Talent;
@@ -24,6 +24,7 @@ class TalentsControllerTest extends TestCase
         $this->actingAs($admin);
     }
 
+    #[Test]
     public function test_store_creates_talent_and_syncs_with_ayon()
     {
         $this->ayonClientMock->shouldReceive('createUser')->once();
@@ -43,6 +44,7 @@ class TalentsControllerTest extends TestCase
         $this->assertEquals('synced', $talent->ayon_sync_status);
     }
 
+    #[Test]
     public function test_update_calls_ayon_update()
     {
         $talent = Talent::factory()->create([
@@ -63,6 +65,7 @@ class TalentsControllerTest extends TestCase
         $this->assertEquals('Jane', $talent->fresh()->first_name);
     }
 
+    #[Test]
     public function test_destroy_calls_ayon_delete()
     {
         $talent = Talent::factory()->create([
