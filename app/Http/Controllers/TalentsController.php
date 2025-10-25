@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\TalentRole;
+use App\Enums\TalentStatus;
 use App\Http\Requests\TalentRequest;
 use App\Models\Talent;
 use App\Services\Contracts\TalentAyonSyncServiceInterface;
@@ -117,14 +118,17 @@ class TalentsController extends Controller
      */
     public function update(TalentRequest $request, int $id): RedirectResponse
     {
+        // dd($request->all());
         DB::beginTransaction();
         try {
             /** @var Talent $talent */
             $talent = Talent::findOrFail($id);
 
+            $isNew = $talent->ayon_sync_status == TalentStatus::PENDING->value ? true : false;
+
             $talent->update($request->validated());
 
-            $this->ayonSync->sync($talent, false, $request->input('ayon_sync_status'));
+            $this->ayonSync->sync($talent, $isNew, $request->input('ayon_sync_status'));
 
             DB::commit();
 

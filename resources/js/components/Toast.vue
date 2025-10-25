@@ -50,27 +50,22 @@
     </Transition>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 
-const props = defineProps({
-    message: {
-        type: String,
-        required: true
-    },
-    type: {
-        type: String,
-        default: 'success',
-        validator: (value) => ['success', 'error', 'info'].includes(value)
-    },
-    duration: {
-        type: Number,
-        default: 3000
-    }
+interface Props {
+    message: string;
+    type?: 'success' | 'error' | 'info';
+    duration?: number;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    type: 'success',
+    duration: 3000
 });
 
 const show = ref(false);
-let timeout = null;
+let timeout: ReturnType<typeof setTimeout> | null = null;
 
 const close = () => {
     show.value = false;
