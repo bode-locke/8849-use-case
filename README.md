@@ -54,11 +54,23 @@ docker compose up -d --build
 # Enter the app container
 docker compose exec app bash
 
+# Install composer dependencies
+composer install
+
+# Generate App Key
+php artisan key:generate
+
 # Run migrations
 php artisan migrate
 
 # Seed the database
 php artisan db:seed
+
+# Install NPM dependencies
+npm install 
+
+# Build 
+npm run build
 ```
 
 ### 3. Configure AYON Connection
